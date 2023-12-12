@@ -1,5 +1,3 @@
-from typing import Annotated
-
 from fastapi import FastAPI, File, UploadFile
 import io
 import torch
@@ -29,9 +27,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = UNET(3,3)
-model.load_state_dict(torch.load("./model_params/best.pth", map_location = torch.device('cpu')))
+model.load_state_dict(torch.load("./model_params/best.pth", map_location = device))
 model.eval()
 
 @app.post("/uploadfile/")
@@ -57,5 +55,5 @@ def create_upload_file(img: UploadFile, mask: UploadFile) :
     return StreamingResponse(io.BytesIO(img_bytes), media_type="image/png")
 
 
-if __name__ == "__main__":
-    uvicorn.run("main:app", port=8000, log_level="info", reload=True)
+# if __name__ == "__main__":
+#     uvicorn.run("main:app", port=8000, log_level="info", reload=True)
