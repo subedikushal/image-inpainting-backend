@@ -29,7 +29,7 @@ app.add_middleware(
 )
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = UNET(3,3)
-model.load_state_dict(torch.load("./model_params/best.pth", map_location = device))
+model.load_state_dict(torch.load("best.pth", map_location = device))
 model.eval()
 
 @app.post("/uploadfile/")
