@@ -6,7 +6,7 @@ import uvicorn
 from model import UNET, prepare_image
 import torchvision.transforms as T
 import matplotlib.pyplot as plt
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, FileResponse, StreamingResponse
 from torchvision import transforms
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -44,15 +44,17 @@ def create_upload_file(img: UploadFile, mask: UploadFile) :
     # Step 1: Convert the PyTorch tensor to a PIL Image
     image_tensor = torch.clamp(output[0], 0,1)
     image = transforms.ToPILImage()(image_tensor)
-    image.save("output.png")
+    # fn = f"{img.filename}.png"
+    # image.save(fn)
 
     # Step 2: Convert the PIL Image to bytes
     img_byte_array = io.BytesIO()
     image.save(img_byte_array, format="PNG")
-    img_bytes = img_byte_array.getvalue()
+    # img_bytes = img_byte_array.getvalue()
+    img_byte_array.seek(0)
 
     # Step 3: Return the image bytes as a StreamingResponse
-    return StreamingResponse(io.BytesIO(img_bytes), media_type="image/png")
+    return StreamingResponse(img_byte_array, media_type="image/png")
 
 
 # if __name__ == "__main__":
